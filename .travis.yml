@@ -4,7 +4,20 @@ services:
   - docker
 
 before_install: 
-  - docker build -t systtek/react-test -f ./client/Dockerfile.dev .
+  - docker build -t systtek/react-test -f ./client/Dockerfile.dev ./client
 
 script:
   - docker run -e CI=true systtek/react-test npm run test -- --coverage
+
+after_success: 
+  - docker build -t systtek/multi-client ./client
+  - docker build -t systtek/multi-nginx ./nginx
+  - docker build -t systtek/multi-server ./server
+  - docker build -t systtek/multi-worker ./worker
+  # Log in to the docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push to dokcer hub
+  - docker push systtek/multi-client
+  - docker push systtek/multi-nginx
+  - docker push systtek/multi-server
+  - docker push systtek/multi-worker
