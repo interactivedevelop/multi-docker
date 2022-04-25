@@ -21,3 +21,15 @@ after_success:
   - docker push systtek/multi-nginx
   - docker push systtek/multi-server
   - docker push systtek/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'eu-west-3'
+  app: 'multi-docker'
+  env: 'multidocker-env'
+  bucket_name: 'elasticbeanstalk-eu-west-3-865635137469'
+  bucket_path: 'docker-multi'
+  on:
+    branch: main
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
